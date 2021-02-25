@@ -1,5 +1,5 @@
 #no images folder and zip file
-preprocess/image_data/*
-preprocess/shadow/*
-preprocess/sketch/*
+preprocess/image_data/
+preprocess/shadow/
+preprocess/sketch/
 preprocess/images.zip
