@@ -1,18 +1,18 @@
 <template>
     <div class="body">
-        <div id="tools" v-on:mouseover="onHoverSideMenu" v-on:mouseleave="offHoverSideMenu">
-            <div id="fix_tool_box">
-                <label><input type="checkbox" id="fix" value="true">fix  ▶</label>
+        <div id="tools" class="toolbox" v-on:mouseover="onHoverSideMenu" v-on:mouseleave="offHoverSideMenu">
+            <div id="fix-tool-box" class="">
+                <label><input type="checkbox" id="fix" v-on:click="holdSideMenu">fix  ▶</label>
             </div>
             <div id="color">
                 <input type="color" id="html5colorpicker" v-on:change="getColorHexCode" value="#ffac73">
-                <div id="color_value"> {{colorHexCode}} </div>
+                <div id="color-value"> {{colorHexCode}} </div>
             </div>
             <div id="filebox">
                 <div id="filelist">
                 
                 </div>
-                <input type="file" id="sel_files" accept="image/*" multiple>
+                <input type="file" id="sel-files" accept="image/*" multiple>
                 <button id="del">delete</button>
             </div>
             <button id="conv">Convert</button>
@@ -37,6 +37,9 @@ export default({
         },
         offHoverSideMenu: function(){
             this.$parent.$refs.workspace.style.marginLeft="0px";
+        },
+        holdSideMenu: function(){
+            this.toolbox.style.background="white";
         }
     }
 })
@@ -61,7 +64,7 @@ export default({
 #tools:hover {
     left: 0;
 }
-#fix_tool_box {
+#fix-tool-box {
     position:absolute;
     top:1%;
     right:7px;
@@ -83,7 +86,7 @@ export default({
     width:97%;
     height:30px;
 }
-#color_value {
+#color-value {
     position:relative;
     display:block;
     width:99%;
@@ -103,7 +106,7 @@ export default({
     position:relative;
     display:block;
     height:200px;
-    border:solid;
+    border:solid 1px;
 }
 #sel_files {
     position: relative;
