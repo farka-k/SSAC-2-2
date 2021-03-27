@@ -3,7 +3,29 @@
         <ShadowAiSideMenu/>
         <div id="workspace" ref="workspace">
             <div id="req-img">
-                <div v-bind:style="{position:'relative',top:'50%'}">+</div>
+                <div v-bind:style="{position:'relative',top:'50%',border:'none'}" v-on:click="open">
+                    <button class="btn-upload">이미지 업로드</button>
+                </div>
+                <div v-bind:style="{position:'relative',top:'50%',margin:'8px 0px 24px'}">
+                    또는 파일 놓기
+                </div>
+            </div>
+            <div class="img-slide-container">
+                <div class="uploaded-image">
+                    <img src="../assets/46.png">
+                </div>
+                <div class="uploaded-image">
+                    <img src="../assets/209.png">
+                </div>
+                <div class="uploaded-image">
+                    <img src="../assets/270.png">
+                </div>
+                <div class="uploaded-image">
+                    <img src="../assets/398.png">
+                </div>
+                <!--Next and Prev buttons-->
+                <a class="prev" v-on:click=moveSlides(-1)>&#10094;</a>
+                <a class="next" v-on:click=moveSlides(1)>&#10095;</a>
             </div>
             <div id="before" class="img">
                 before
@@ -29,6 +51,11 @@ export default ({
     name:'ShadowAiBody',
     components:{
         ShadowAiSideMenu
+    },
+    methods:{
+        moveSlides:function(n){
+            n;
+        }
     }
 })
 </script>
@@ -51,7 +78,31 @@ export default ({
     text-align:center;
     border:1px solid;
 }
-
+.img-slide-container{
+    position:relative;
+    margin:auto;
+}
+.uploaded-image{
+    display:none;
+}
+.prev, .next{
+    cursor:pointer;
+    position:absolute;
+    top:50%;
+    width:auto;
+    margin-top:-22px;
+    padding:16px;
+    color:black;
+    font-weight:bold;
+    font-size:18px;
+    transition:.6s ease;
+    border-radius:0 3px 3px 0;
+    user-select:none;
+}
+.next{
+    right:0;
+    border-radius:3px 0 0 3px;
+}
 #req-img{
     position:absolute;
     display:block;
@@ -121,5 +172,23 @@ export default ({
     top:90%;
     width:77%;
     height:35px;
+}
+
+.btn-upload{
+    display:inline-block;
+    cursor:pointer;
+    width:225px;
+    padding:.5rem 1rem;
+    line-height:1.5;
+    font-weight:700;
+    font-size:1.25rem;
+    color:white;
+    background-color:#2699fb;
+    border-color:#2699fb;
+    border-radius:.3125rem;
+    border:1px solid;
+    text-align:center;
+    vertical-align: middle;
+
 }
 </style>
