@@ -1,8 +1,13 @@
 <template>
     <div class="header">
         <nav class="navbar">
-            <img src="../assets/logo007.png" id="logo" alt="Shadow.Ai" width=120px height=50px v-on:click="reload">
-            <div id="nav-items">item1</div>
+            <img src="../assets/logo007.png" id="logo" alt="Shadow.Ai" width=140px height=60px v-on:click="reload">
+            <div id="nav-items">
+                <ul>
+                    <li><a href="" v-on:click="showUsage">사용 방법</a></li>
+                    <li><a href="#">item2</a></li>
+                </ul>
+            </div>
         </nav>
     </div>
 </template>
@@ -11,12 +16,15 @@ export default({
     methods:{
         reload:function(){
             location.reload();
+        },
+        showUsage:function(){
+            alert("test")
         }
     }
 })
 </script>
 
-<style>
+<style scoped>
 .header {
     background-color: #ffffff;
     border-bottom:1px solid;
@@ -25,18 +33,26 @@ export default({
 .navbar {
     display:flex;
     align-items:center;
-    padding:10px;
 }
 #logo{
-    position:relative;
+    margin-left:30px;
     cursor:pointer;
-    display:inline-block;
+    display:inline;
 }
 #nav-items{
-    position:relative;
-    display:inline-block;
-    border:1px dotted;
-    margin:0 10px;
     font-size:24px;
+    width:100%;
+}
+ul {
+    list-style-type: none;
+}
+li {
+    display:inline-block;
+}
+a{
+    display:block;
+    padding:8px;
+    text-align:center;
+    text-decoration: none;
 }
 </style>
