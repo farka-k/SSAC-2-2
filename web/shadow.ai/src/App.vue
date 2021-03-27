@@ -22,10 +22,6 @@ export default {
 </script>
 
 <style>
-.body {
-  margin:0px auto;
-  padding:0px auto;
-}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
