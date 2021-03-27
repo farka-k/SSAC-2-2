@@ -1,24 +1,22 @@
 <template>
-    <div class="body">
-        <div id="tools" class="toolbox" v-on:mouseover="onHoverSideMenu" v-on:mouseleave="offHoverSideMenu">
-            <div id="fix-tool-box" class="">
-                <label><input type="checkbox" id="fix" v-on:click="holdSideMenu">fix  ▶</label>
-            </div>
-            <div id="color">
-                <input type="color" id="html5colorpicker" v-on:change="getColorHexCode" value="#ffac73">
-                <div id="color-value"> {{colorHexCode}} </div>
-            </div>
-            <div id="filebox">
-                <div id="filelist">
+    <div id="tools" class="toolbox" v-on:mouseover="onHoverSideMenu" v-on:mouseleave="offHoverSideMenu">
+        <div id="fix-tool-box" class="">
+            <label><input type="checkbox" id="fix" v-on:click="holdSideMenu">fix  ▶</label>
+        </div>
+        <div id="color">
+            <input type="color" id="html5colorpicker" v-on:change="getColorHexCode" value="#ffac73">
+            <div id="color-value"> {{colorHexCode}} </div>
+        </div>
+        <div id="filebox">
+            <div id="filelist">
                 
-                </div>
-                <input type="file" id="sel-files" accept="image/*" multiple>
-                <button id="del">delete</button>
             </div>
-            <button id="conv">Convert</button>
-            <button id="save">Save</button>
+            <input type="file" id="sel-files" accept="image/*" multiple>
+            <button id="del">delete</button>
+        </div>
+        <button id="conv">Convert</button>
+        <button id="save">Save</button>
         </div>   
-    </div>
 </template>
 <script>
 export default({
@@ -39,7 +37,7 @@ export default({
             this.$parent.$refs.workspace.style.marginLeft="0px";
         },
         holdSideMenu: function(){
-            this.toolbox.style.background="white";
+            this.toolbox.style.background="#ffffff";
         }
     }
 })
@@ -51,7 +49,7 @@ export default({
     display: flex;
     justify-content: center;
     width: 300px;
-    height:inherit;
+    height:90%;
     z-index: 1; /* Stay on top */
     left: -275px;
     background-color: #1f1f1f;

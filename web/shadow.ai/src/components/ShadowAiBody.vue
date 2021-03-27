@@ -35,10 +35,13 @@ export default ({
 
 <style scoped>
 .body {
-    height:600px;
-    display: flex;
+    position:relative;
+    height:80%;
+    display:flex;
     justify-content: center;
     background-color:#eeeeee;
+    margin:0px auto;
+    padding:0px auto;
 }
 
 #workspace {

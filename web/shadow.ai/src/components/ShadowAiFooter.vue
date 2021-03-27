@@ -7,7 +7,11 @@
 </template>
 <style>
 .footer{
+    position: absolute;
+    display:block;
     background-color:black;
+    top:100%;
+    width:100%;
 }
 .footer>div{
     position:relative;
