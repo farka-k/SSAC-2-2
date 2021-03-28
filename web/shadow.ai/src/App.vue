@@ -1,9 +1,11 @@
 <template>
-  <div id="app">
+  <v-app>
     <ShadowAiHeader/>
-    <ShadowAiBody/>
+    <v-main>
+      <ShadowAiBody/>
+    </v-main>
     <ShadowAiFooter/>
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -22,15 +24,10 @@ export default {
 </script>
 
 <style>
-.body {
-  margin:0px auto;
-  padding:0px auto;
-}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-
 }
 </style>
