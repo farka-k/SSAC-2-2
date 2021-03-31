@@ -1,137 +1,157 @@
 <template>
-    <div class="body">
-        <div id="tools" class="toolbox" v-on:mouseover="onHoverSideMenu" v-on:mouseleave="offHoverSideMenu">
-            <div id="fix-tool-box" class="">
-                <label><input type="checkbox" id="fix" v-on:click="holdSideMenu">fix  ▶</label>
-            </div>
-            <div id="color">
-                <input type="color" id="html5colorpicker" v-on:change="getColorHexCode" value="#ffac73">
-                <div id="color-value"> {{colorHexCode}} </div>
-            </div>
-            <div id="filebox">
-                <div id="filelist">
-                
-                </div>
-                <input type="file" id="sel-files" accept="image/*" multiple>
-                <button id="del">delete</button>
-            </div>
-            <button id="conv">Convert</button>
-            <button id="save">Save</button>
-        </div>   
-    </div>
+    <v-navigation-drawer
+        light
+        width=20%
+        floating
+        id="sidemenu"
+        >
+        <v-toolbar dense>
+
+        </v-toolbar>
+        <v-spacer v-bind:style="{height:'20px'}"></v-spacer>
+        <v-container>
+            <v-row>
+                <v-col cols="12">
+                    <v-card>
+                        <v-card-subtitle>
+                            Select Image
+                        </v-card-subtitle>
+                        <v-divider></v-divider>
+                        <v-card-actions>
+                            <v-file-input
+                                dense
+                                multiple
+                                chips
+                                counter
+                                show-size
+                                accept="image/*"
+                                
+                                label="Select Image"
+                            >
+                            </v-file-input>
+                        </v-card-actions>
+                    </v-card>
+                </v-col>
+                <v-col cols="12">
+                    <v-card>
+                        <v-card-subtitle>
+                            Shadow Color
+                        </v-card-subtitle>
+                        <v-divider></v-divider>
+                        <v-card-actions>
+                            <v-color-picker
+                                width="inherit"
+                                canvas-height="100"
+                                elevation="15"
+                                v-bind:value="defaultColorHexACode"
+                            ></v-color-picker>
+                        </v-card-actions>
+                    </v-card>
+                </v-col>
+                <v-col cols="12">
+                    <v-card>
+                        <v-card-subtitle>
+                            Output Option
+                        </v-card-subtitle>
+                        <v-divider></v-divider>
+                        <v-card-actions>
+                            <v-row no-gutters align="center">
+                                <v-col cols="4">
+                                    <v-subheader>format</v-subheader>
+                                </v-col>
+                                <v-col cols="8">
+                                    <v-select
+                                        dense
+                                        v-model="select_format"
+                                        :items="formats"
+                                        item-text="format"
+                                        item-value="ext"
+                                    ></v-select>
+                                </v-col>
+                                <v-col cos="4">
+                                    <v-subheader>size</v-subheader>
+                                </v-col>
+                                <v-col cols="8">
+                                    <v-select
+                                        dense
+                                        v-model="select_size"
+                                        :items="sizes"
+                                        item-text="sizeopt"
+                                        item-value="value"
+                                    ></v-select>
+                                </v-col>
+                                <v-col v-show="isCustomSize">
+                                    <v-subheader>width</v-subheader>
+                                </v-col>
+                                <v-col v-show="isCustomSize">
+                                    <v-text-field
+                                        dense
+                                        suffix="px"
+                                    ></v-text-field>
+                                </v-col>
+                                <v-col v-show="isCustomSize">
+                                    <v-subheader>height</v-subheader>
+                                </v-col>
+                                <v-col v-show="isCustomSize">
+                                    <v-text-field
+                                        dense
+                                        suffix="px"
+                                    ></v-text-field>
+                                </v-col>
+                            </v-row>
+                        </v-card-actions>
+                    </v-card>
+                </v-col>
+                <v-col cols="12">
+                    <v-card>
+                        <v-card-actions>
+                            <v-row no-gutters>
+                                <v-col cols="12">
+                                    <v-btn block>Convert</v-btn>
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-btn block>Save</v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-card-actions>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </v-container>
+    </v-navigation-drawer>
 </template>
 <script>
 export default({
     name:'ShadowAiSideMenu',
     data(){
         return{
-            colorHexCode:'#ffac73'
+            defaultColorHexACode:'#FFAC73FF',
+            select_format:{format:'png',ext:'.png'},
+            formats:[
+                {format:'png',ext:'.png'},
+                {format:'jpg',ext:'.jpg'},
+                {format:'bmp',ext:'.bmp'}
+            ],
+            select_size:{sizeopt:'same as input', value:0},
+            sizes:[
+                {sizeopt:'same as input', value:0},
+                {sizeopt:'custom', value:1}
+            ]
         }
     },
+    computed:{
+       isCustomSize:function(){
+           return this.select_size==1;
+       }
+    },
     methods:{
-        getColorHexCode: function(event){
-            this.colorHexCode=event.target.value;
-        },
-        onHoverSideMenu: function(){
-            this.$parent.$refs.workspace.style.marginLeft="300px";
-        },
-        offHoverSideMenu: function(){
-            this.$parent.$refs.workspace.style.marginLeft="0px";
-        },
-        holdSideMenu: function(){
-            this.toolbox.style.background="white";
-        }
+       
     }
 })
 </script>
-
 <style>
-#tools {
-    position: fixed;
-    display: flex;
-    justify-content: center;
-    width: 300px;
-    height:inherit;
-    z-index: 1; /* Stay on top */
-    left: -275px;
-    background-color: #1f1f1f;
-    overflow-x: hidden; /* Disable horizontal scroll */
-    overflow-y: hidden;
-    transition: 0.3s; /* 0.3 second transition effect to slide in the sidenav */
-    color:white;
-}
-
-#tools:hover {
-    left: 0;
-}
-#fix-tool-box {
-    position:absolute;
-    top:1%;
-    right:7px;
-    
-}
-
-#color {
-    position:absolute;
-    top:10%;
-    width:77%;
-    display:block;
-    background-color:#f1e3e3;
-    border:1px solid white;
-    
-}
-#html5colorpicker{
-    position:relative;
-    display:block;
-    width:97%;
-    height:30px;
-}
-#color-value {
-    position:relative;
-    display:block;
-    width:99%;
-    color:black;
-    text-align: center;
-    
-}
-
-#filebox {
-    position:absolute;
-    top:30%;
-    width:77%;
-    display:block;
-    border:solid 1px;
-}
-#filelist{
-    position:relative;
-    display:block;
-    height:200px;
-    border:solid 1px;
-}
-#sel_files {
-    position: relative;
-    display:block;
-}
-
-#del {
-    position: relative;
-    display:block;
-}
-
-
-#conv {
-    position: absolute;
-    display:block;
-    top:80%;
-    width:77%;
-    height:35px;
-}
-
-#save {
-    position: absolute;
-    display:block;
-    top:90%;
-    width:77%;
-    height:35px;
+#sidemenu{
+    display:inline-block;
+    height:100%;
 }
 </style>

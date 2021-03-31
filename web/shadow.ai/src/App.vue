@@ -1,9 +1,7 @@
 <template>
   <v-app>
     <ShadowAiHeader/>
-    <v-main>
-      <ShadowAiBody/>
-    </v-main>
+    <ShadowAiBody/>
     <ShadowAiFooter/>
   </v-app>
 </template>
