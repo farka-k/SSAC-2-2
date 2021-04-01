@@ -3,3 +3,4 @@ preprocess/image_data/
 preprocess/shadow/
 preprocess/sketch/
 preprocess/images.zip
+model/AnimeColorizationModelv7.h5
