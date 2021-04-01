@@ -1,9 +1,11 @@
 <template>
-    <v-app-bar app light>
+    <v-app-bar app light
+        height=80
+    >
         <v-img
-            src="../assets/logo007.png"
+            src="../assets/main_logo2.png"
             id="logo"
-            max-width=200
+            max-width=180
             max-height=80
             height=100%
             alt=Shadow.Ai
