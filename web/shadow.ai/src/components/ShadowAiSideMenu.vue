@@ -1,6 +1,5 @@
 <template>
     <v-navigation-drawer
-        light
         width=20%
         floating
         id="sidemenu"
@@ -25,11 +24,14 @@
                                 counter
                                 show-size
                                 accept="image/*"
+                                v-model="fileObj"
+                                ref="ifd"
                                 
                                 label="Select Image"
                             >
                             </v-file-input>
                         </v-card-actions>
+                            <v-card-text>{{ this.$store.state.fileObjList }}</v-card-text>
                     </v-card>
                 </v-col>
                 <v-col cols="12">
@@ -43,7 +45,7 @@
                                 width="inherit"
                                 canvas-height="100"
                                 elevation="15"
-                                v-bind:value="defaultColorHexACode"
+                                :value="defaultColorHexACode"
                             ></v-color-picker>
                         </v-card-actions>
                     </v-card>
@@ -136,17 +138,27 @@ export default({
             sizes:[
                 {sizeopt:'same as input', value:0},
                 {sizeopt:'custom', value:1}
-            ]
+            ],
+            
         }
     },
     computed:{
-       isCustomSize:function(){
-           return this.select_size==1;
-       }
+        fileObj:{
+            get(){
+                return this.$store.getters.getFileObjectList;
+            },
+            set(value){
+                this.$store.commit('updateFile',value);
+            }
+        },
+        isCustomSize:function(){
+            return this.select_size==1;
+        },
+
     },
     methods:{
-       
-    }
+        
+    },
 })
 </script>
 <style>
