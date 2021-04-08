@@ -9,8 +9,20 @@ export const store= new Vuex.Store({
         isFileLoaded: false,
         fileObjList:[],
         fileUrlList:[],
-        currentIndex:0
-
+        currentIndex:0,
+        defaultColorHexACode:'#FFAC73FF',
+        currentColorHexACode:'#FFAC73FF',
+        select_format:{format:'png',ext:'.png'},
+        formats:[
+            {format:'png',ext:'.png'},
+            {format:'jpg',ext:'.jpg'},
+            {format:'bmp',ext:'.bmp'}
+        ],
+        select_size:{sizeopt:'same as input', value:0},
+        sizes:[
+            {sizeopt:'same as input', value:0},
+            {sizeopt:'custom', value:1}
+        ]
     },
     getters:{
         getFileObjList:function(state){
@@ -21,9 +33,29 @@ export const store= new Vuex.Store({
         },
         getCurrentItemIndex:function(state){
             return state.currentIndex;
+        },
+        getDefaultColorHexA:function(state){
+            return state.defaultColorHexACode;
+        },
+        getCurrentColorHexA:function(state){
+            return state.currentColorHexACode;
+        },
+        getSelectedFormat:function(state){
+            return state.select_format;
+        },
+        getSelectedSize:function(state){
+            return state.select_size;
         }
     },
     mutations:{
+        changeTheme(state,payload){
+            //payload: 1-true, 0-false
+            if (payload==1){
+                state.isDarkTheme=true;
+            }
+            else
+                state.isDarkTheme=false;
+        },
         updateFile(state,payload){
             //payload: file object array created by file input change event
             if (payload.length){
@@ -52,6 +84,13 @@ export const store= new Vuex.Store({
             state.fileUrlList.splice(state.currentIndex,1);
             if (state.currentIndex >= state.fileObjList.length)
                 state.currentIndex--;
+            if (state.fileObjList.length == 0) state.isFileLoaded=false;
+        },
+        clearFile(state){
+            state.fileObjList=[];
+            state.fileUrlList=[];
+            state.currentIndex=0;
+            state.isFileLoaded=false;
         },
         setCurrentItemIndex(state,payload){
             //payload: current index of image showing on carousel
@@ -63,15 +102,18 @@ export const store= new Vuex.Store({
             }
             state.currentIndex=payload;
         },
-        changeTheme(state,payload){
-            //payload: 1-true, 0-false
-            if (payload==1){
-                state.isDarkTheme=true;
-            }
-            else
-                state.isDarkTheme=false;
+        updateColor(state,payload){
+            //payload:color code
+            state.currentColorHexACode=payload;
+        },
+        updateFormat(state,payload){
+            //payload:format item
+            state.select_format=payload;
+        },
+        updateSize(state,payload){
+            //payload:size item
+            state.select_size=payload;
         }
-
     },
     actions:{
 

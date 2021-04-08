@@ -4,10 +4,16 @@
         floating
         id="sidemenu"
         >
-        <v-toolbar dense>
-
+        <v-toolbar dense flat>
+            <v-spacer></v-spacer>
+            <v-btn
+                icon
+                depressed
+                @click="refresh"
+            >
+                <v-icon>mdi-refresh</v-icon>
+            </v-btn>
         </v-toolbar>
-        <v-spacer v-bind:style="{height:'20px'}"></v-spacer>
         <v-container>
             <v-row>
                 <v-col cols="12">
@@ -31,7 +37,6 @@
                             >
                             </v-file-input>
                         </v-card-actions>
-                            <v-card-text>{{ this.$store.state.fileObjList }}</v-card-text>
                     </v-card>
                 </v-col>
                 <v-col cols="12">
@@ -42,10 +47,10 @@
                         <v-divider></v-divider>
                         <v-card-actions>
                             <v-color-picker
-                                width="inherit"
                                 canvas-height="100"
+                                dot-size="18"
                                 elevation="15"
-                                :value="defaultColorHexACode"
+                                v-model="color"
                             ></v-color-picker>
                         </v-card-actions>
                     </v-card>
@@ -64,8 +69,8 @@
                                 <v-col cols="8">
                                     <v-select
                                         dense
-                                        v-model="select_format"
-                                        :items="formats"
+                                        v-model="format"
+                                        :items="$store.state.formats"
                                         item-text="format"
                                         item-value="ext"
                                     ></v-select>
@@ -76,8 +81,8 @@
                                 <v-col cols="8">
                                     <v-select
                                         dense
-                                        v-model="select_size"
-                                        :items="sizes"
+                                        v-model="size"
+                                        :items="$store.state.sizes"
                                         item-text="sizeopt"
                                         item-value="value"
                                     ></v-select>
@@ -125,23 +130,6 @@
 <script>
 export default({
     name:'ShadowAiSideMenu',
-    data(){
-        return{
-            defaultColorHexACode:'#FFAC73FF',
-            select_format:{format:'png',ext:'.png'},
-            formats:[
-                {format:'png',ext:'.png'},
-                {format:'jpg',ext:'.jpg'},
-                {format:'bmp',ext:'.bmp'}
-            ],
-            select_size:{sizeopt:'same as input', value:0},
-            sizes:[
-                {sizeopt:'same as input', value:0},
-                {sizeopt:'custom', value:1}
-            ],
-            
-        }
-    },
     computed:{
         fileObj:{
             get(){
@@ -152,12 +140,39 @@ export default({
             }
         },
         isCustomSize:function(){
-            return this.select_size==1;
+            return this.$store.getters.getSelectedSize==1;
         },
-
+        color:{
+            get(){
+                return this.$store.getters.getCurrentColorHexA;
+            },
+            set(value){
+                this.$store.commit('updateColor',value);
+            }
+        },
+        format:{
+            get(){
+                return this.$store.getters.getSelectedFormat;
+            },
+            set(value){
+                this.$store.commit('updateFormat',value);
+            }
+        },
+        size:{
+            get(){
+                return this.$store.getters.getSelectedSize;
+            },
+            set(value){
+                this.$store.commit('updateSize',value);
+            }
+        }
     },
     methods:{
-        
+        refresh:function(){
+            this.$store.commit('clearFile');
+            this.$refs.ifd.value=[];
+            this.$store.commit('updateColor',this.$store.getters.getDefaultColorHexA);
+        }
     },
 })
 </script>
@@ -165,5 +180,9 @@ export default({
 #sidemenu{
     display:inline-block;
     height:100%;
+}
+
+.v-color-picker{
+    width:100%;
 }
 </style>

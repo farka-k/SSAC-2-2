@@ -9,23 +9,22 @@
         >
             <v-card @drop.prevent="drop" @dragover.prevent @dragleave.prevent
                 id="dropzone"
-                color="light-blue lighten-4"
+                :color="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'"
                 height=90%
                 ripple
             >
-                <v-container fill-height v-show="!this.$store.state.isFileLoaded">
+                <v-container fill-height v-show="!$store.state.isFileLoaded">
                     <v-row align="center" justify="center">
                         <v-col>
                             <v-btn @click="fileopen">이미지 업로드</v-btn>
-                            <v-card-text>또는 파일 놓기</v-card-text>
-                            <v-card-text>{{ this.$store.state.fileObjList }}</v-card-text>
+                            <v-card-text class="blue--text font-weight-bold">또는 파일 놓기</v-card-text>
                         </v-col>
                     </v-row>
                 </v-container>
-                <v-container v-show="this.$store.state.isFileLoaded">
+                <v-container v-show="$store.state.isFileLoaded">
                     <v-carousel v-model="currentIndex">
                         <v-carousel-item
-                            v-for="(item,i) in this.$store.state.fileUrlList"
+                            v-for="(item,i) in $store.state.fileUrlList"
                             :key="i"
                             :src="item"
                         ></v-carousel-item>
