@@ -29,7 +29,7 @@
                                 chips
                                 counter
                                 show-size
-                                accept="image/*"
+                                accept="image/png, image/jpeg, image/bmp"
                                 v-model="fileObj"
                                 ref="ifd"
                                 
@@ -45,7 +45,7 @@
                             Shadow Color
                         </v-card-subtitle>
                         <v-divider></v-divider>
-                        <v-card-actions>
+                        <v-card-actions class="d-flex justify-center">
                             <v-color-picker
                                 canvas-height="100"
                                 dot-size="18"
@@ -81,9 +81,9 @@
                                 <v-col cols="8">
                                     <v-select
                                         dense
-                                        v-model="size"
-                                        :items="$store.state.sizes"
-                                        item-text="sizeopt"
+                                        v-model="sizeopt"
+                                        :items="$store.state.sizeopt"
+                                        item-text="label"
                                         item-value="value"
                                     ></v-select>
                                 </v-col>
@@ -94,6 +94,10 @@
                                     <v-text-field
                                         dense
                                         suffix="px"
+                                        ref="custom_width"
+                                        type="number"
+                                        v-model="width"
+                                        
                                     ></v-text-field>
                                 </v-col>
                                 <v-col v-show="isCustomSize">
@@ -103,6 +107,10 @@
                                     <v-text-field
                                         dense
                                         suffix="px"
+                                        ref="custom_width"
+                                        type="number"
+                                        v-model="height"
+                                        
                                     ></v-text-field>
                                 </v-col>
                             </v-row>
@@ -114,7 +122,7 @@
                         <v-card-actions>
                             <v-row no-gutters>
                                 <v-col cols="12">
-                                    <v-btn block>Convert</v-btn>
+                                    <v-btn block @click="convertImage">Convert</v-btn>
                                 </v-col>
                                 <v-col cols="12">
                                     <v-btn block>Save</v-btn>
@@ -130,6 +138,13 @@
 <script>
 export default({
     name:'ShadowAiSideMenu',
+    data(){
+        return{
+            size_validation:"if(Number(this.value) > Number(this.maxsize)) this.value=this.maxsize",
+            maxsize:1024,
+            minsize:1
+        }
+    },
     computed:{
         fileObj:{
             get(){
@@ -140,11 +155,11 @@ export default({
             }
         },
         isCustomSize:function(){
-            return this.$store.getters.getSelectedSize==1;
+            return this.$store.getters.getSelectedSizeopt==1;
         },
         color:{
             get(){
-                return this.$store.getters.getCurrentColorHexA;
+                return this.$store.getters.getCurrentColorHex;
             },
             set(value){
                 this.$store.commit('updateColor',value);
@@ -158,12 +173,28 @@ export default({
                 this.$store.commit('updateFormat',value);
             }
         },
-        size:{
+        sizeopt:{
             get(){
-                return this.$store.getters.getSelectedSize;
+                return this.$store.getters.getSelectedSizeopt;
             },
             set(value){
-                this.$store.commit('updateSize',value);
+                this.$store.commit('updateSizeOption',value);
+            }
+        },
+        width:{
+            get(){
+                return this.$store.getters.getCustomSize.custom_width
+            },
+            set(value){
+                this.$store.commit('updateCustomWidth', parseInt(value));
+            }
+        },
+        height:{
+            get(){
+                return this.$store.getters.getCustomSize.custom_height
+            },
+            set(value){
+                this.$store.commit('updateCustomHeight', parseInt(value));
             }
         }
     },
@@ -171,7 +202,11 @@ export default({
         refresh:function(){
             this.$store.commit('clearFile');
             this.$refs.ifd.value=[];
-            this.$store.commit('updateColor',this.$store.getters.getDefaultColorHexA);
+            this.$store.commit('updateColor',this.$store.getters.getDefaultColorHex);
+            this.$store.commit('resetValues');
+        },
+        convertImage:function(){
+            this.$store.dispatch('convertImage');
         }
     },
 })

@@ -1,28 +1,37 @@
 import Vue from "vue";
 import Vuex from "vuex";
-
+import axios from 'axios';
 Vue.use(Vuex);
 
 export const store= new Vuex.Store({
     state:{
+        showOverlay: false,
         isDarkTheme: false,
         isFileLoaded: false,
+        isExecuted: false,
         fileObjList:[],
         fileUrlList:[],
         currentIndex:0,
-        defaultColorHexACode:'#FFAC73FF',
-        currentColorHexACode:'#FFAC73FF',
-        select_format:{format:'png',ext:'.png'},
+        defaultColorHexCode:'#FFAC73',
+        currentColorHexCode:'#FFAC73',
+        select_format:'.png',
         formats:[
             {format:'png',ext:'.png'},
             {format:'jpg',ext:'.jpg'},
             {format:'bmp',ext:'.bmp'}
         ],
-        select_size:{sizeopt:'same as input', value:0},
-        sizes:[
-            {sizeopt:'same as input', value:0},
-            {sizeopt:'custom', value:1}
-        ]
+        select_sizeopt:0,
+        sizeopt:[
+            {label:'same as input', value:0},
+            {label:'custom', value:1}
+        ],
+        size:{custom_width:256, custom_height:256},
+        base64ImgSrc:[],
+        originDataType:[],
+        convImageSrc:[],
+        request:null,
+        batchid:null,
+        dataURLs:[]
     },
     getters:{
         getFileObjList:function(state){
@@ -31,21 +40,36 @@ export const store= new Vuex.Store({
         getFileUrlList:function(state){
             return state.fileUrlList;
         },
+        getObjCount:function(state){
+            return state.fileUrlList.length;
+        },
         getCurrentItemIndex:function(state){
             return state.currentIndex;
         },
-        getDefaultColorHexA:function(state){
-            return state.defaultColorHexACode;
+        getDefaultColorHex:function(state){
+            return state.defaultColorHexCode;
         },
-        getCurrentColorHexA:function(state){
-            return state.currentColorHexACode;
+        getCurrentColorHex:function(state){
+            return state.currentColorHexCode;
         },
         getSelectedFormat:function(state){
             return state.select_format;
         },
-        getSelectedSize:function(state){
-            return state.select_size;
-        }
+        getSelectedSizeopt:function(state){
+            return state.select_sizeopt;
+        },
+        getCustomSize:function(state){
+            return state.size;
+        },
+        getOriginalBase64:function(state){
+            return state.base64ImgSrc;
+        },
+        getConvImageBase64:function(state){
+            return state.convImageSrc;
+        },
+        getLastRequst:function(state){
+            return state.request;
+        },
     },
     mutations:{
         changeTheme(state,payload){
@@ -56,6 +80,9 @@ export const store= new Vuex.Store({
             else
                 state.isDarkTheme=false;
         },
+        setBase64Src(state,payload){
+            state.base64ImgSrc=payload;
+        },
         updateFile(state,payload){
             //payload: file object array created by file input change event
             if (payload.length){
@@ -65,6 +92,11 @@ export const store= new Vuex.Store({
                 state.isFileLoaded= false;
             }
             state.fileObjList=payload;
+            if (state.fileUrlList.length){
+                state.fileUrlList.forEach(u=>{
+                    window.URL.revokeObjectURL(u);
+                })
+            }
             state.fileUrlList=state.fileObjList.map((v)=>{
                 return URL.createObjectURL(v);
             });
@@ -80,6 +112,7 @@ export const store= new Vuex.Store({
             });
         },
         deleteFile(state){
+            window.URL.revokeObjectURL(state.fileUrlList[state.currentIndex]);
             state.fileObjList.splice(state.currentIndex,1);
             state.fileUrlList.splice(state.currentIndex,1);
             if (state.currentIndex >= state.fileObjList.length)
@@ -87,6 +120,9 @@ export const store= new Vuex.Store({
             if (state.fileObjList.length == 0) state.isFileLoaded=false;
         },
         clearFile(state){
+            state.fileUrlList.forEach(u=>{
+                window.URL.revokeObjectURL(u);
+            })
             state.fileObjList=[];
             state.fileUrlList=[];
             state.currentIndex=0;
@@ -104,18 +140,110 @@ export const store= new Vuex.Store({
         },
         updateColor(state,payload){
             //payload:color code
-            state.currentColorHexACode=payload;
+            state.currentColorHexCode=payload;
         },
         updateFormat(state,payload){
             //payload:format item
             state.select_format=payload;
         },
-        updateSize(state,payload){
-            //payload:size item
-            state.select_size=payload;
+        updateSizeOption(state,payload){
+            //payload:sizeoption item
+            state.select_sizeopt=payload;
+        },
+        updateCustomWidth(state,payload){
+            //payload:width value
+            state.size.custom_width=payload;
+        },
+        updateCustomHeight(state,payload){
+            //payload:height value
+            state.size.custom_height=payload;
+        },
+        showOverlay(state){
+            state.showOverlay=!state.showOverlay;
+        },
+        resetValues(state){
+            state.select_format={format:'png',ext:'.png'},
+            state.select_size={sizeopt:'same as input', value:0}
+            state.custom_width=256;
+            state.custom_height=256;
+            state.originDataType=[];
+            state.base64ImgSrc=[];
+            state.convImageSrc=[];
+            state.isExecuted=false;
+
+        },
+        beforeUpload(state,payload){
+            state.dataURLs= payload
+            payload.forEach(url=>{
+                let urltext=url.split(',');
+                state.originDataType.push(urltext[0]);
+                state.base64ImgSrc.push(urltext[1]);
+            });
+            const request={
+                img:state.base64ImgSrc,
+                type:state.originDataType
+            }
+            state.request=request;
+        },
+        makeConvertRequest(state,payload){
+            state.batchid=payload;
+            var request={
+                color: state.currentColorHexCode,
+                sizeoption: state.select_sizeopt,
+            }
+            if (state.select_sizeopt){
+                request.req_height=state.size.custom_height;
+                request.req_width=state.size.custom_width;
+            }
+            
+            console.log(request);
+            state.request=request;
+        },
+        afterRecieve(state){
+            state.isExecuted=true;
+        },
+        updateConvertedFile(state,payload){
+            state.isExcuted=true;
+            state.convImageSrc=payload;
         }
+
     },
     actions:{
+        async convertImage(context){
+            await Promise.all(context.state.fileObjList.map(file=>{
+                return (new Promise((resolve,reject)=>{
+                    let reader=new FileReader();
+                    reader.onload=ev=>{
+                        resolve(ev.target.result);
+                    }
+                    reader.onerror=()=>{
+                        reject()
+                    };
+                    reader.readAsDataURL(file);
+                }))
+            }))
+            .then(images=>{
+                context.commit('beforeUpload',images);
+                context.commit('afterRecieve');
+            }, error=>{
+                console.error(error);
+            });
 
+            await axios.post('http://localhost:8080/api/images',context.state.request)
+            .then(response=>{
+                if (response.status===201) {
+                    console.log(response.data.id);
+                    context.commit('makeConvertRequest',response.data.id);
+                    
+                    axios.get('http://localhost:8080/api/orders/'+context.state.batchid+'/conv',context.state.request)
+                    .then(response=>{
+                        if (response.status===200){
+                            context.commit('updateConvertedFile',response.data.img);
+
+                        }
+                    })
+                }  
+            })
+        }
     }
-});
+})

@@ -11,7 +11,7 @@
             alt=Shadow.Ai
             @click="reload"
         ></v-img>
-        <v-btn text height=100% @click="showUsage">사용 방법</v-btn>
+        <v-btn text height=100% @click="$store.commit('showOverlay')">사용 방법</v-btn>
         <v-col class="text-right">
             <v-btn-toggle
                 rounded
@@ -49,7 +49,7 @@ export default({
             location.reload();
         },
         showUsage:function(){
-            alert("test")
+            this.$store.state.showOverlay=!this.$store.state.showOverlay;
         },
     }
 })
