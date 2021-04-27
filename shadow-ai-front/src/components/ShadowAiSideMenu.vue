@@ -29,6 +29,7 @@
                                 chips
                                 counter
                                 show-size
+                                :clearable=false
                                 accept="image/png, image/jpeg, image/bmp"
                                 v-model="fileObj"
                                 ref="ifd"
@@ -204,6 +205,7 @@ export default({
             this.$refs.ifd.value=[];
             this.$store.commit('updateColor',this.$store.getters.getDefaultColorHex);
             this.$store.commit('resetValues');
+            location.reload();
         },
         convertImage:function(){
             this.$store.dispatch('convertImage');

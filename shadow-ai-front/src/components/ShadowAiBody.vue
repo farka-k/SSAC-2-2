@@ -70,7 +70,7 @@
                                     <v-btn v-show=false></v-btn>
                                 </template>
                                 <v-carousel-item
-                                    v-for="(item,i) in $store.state.convImageSrc"
+                                    v-for="(item,i) in $store.state.convImageUrl"
                                     :key="i"
                                     :src="item"
                                 ></v-carousel-item>
@@ -125,13 +125,14 @@ export default ({
         },
         filedelete:function(){
             this.$store.commit('deleteFile');
+            console.log(this.$refs.ifd.value)
         },
         saveZip:function(){
             var zip=new JsZip();
             
             const len=this.$store.getters.getObjCount;
             const format=this.$store.getters.getSelectedFormat;
-            const base64s=this.$store.getters.getOriginalBase64;
+            const base64s=this.$store.getters.getConvImageBase64;
             [...Array(len).keys()].forEach(n=>{
                 let filename='image'+n.toString()+format;
                 console.log(filename);

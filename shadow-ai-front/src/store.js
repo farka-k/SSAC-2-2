@@ -29,7 +29,9 @@ export const store= new Vuex.Store({
         base64ImgSrc:[],
         originDataType:[],
         convImageSrc:[],
-        request:null,
+        convImageUrl:[],
+        UploadRequest:null,
+        ConvertRequest:null,
         batchid:null,
         dataURLs:[]
     },
@@ -97,6 +99,7 @@ export const store= new Vuex.Store({
                     window.URL.revokeObjectURL(u);
                 })
             }
+            state.currentIndex=0;
             state.fileUrlList=state.fileObjList.map((v)=>{
                 return URL.createObjectURL(v);
             });
@@ -117,7 +120,10 @@ export const store= new Vuex.Store({
             state.fileUrlList.splice(state.currentIndex,1);
             if (state.currentIndex >= state.fileObjList.length)
                 state.currentIndex--;
-            if (state.fileObjList.length == 0) state.isFileLoaded=false;
+            if (state.fileObjList.length == 0) {
+                state.isFileLoaded=false;
+                this.$refs.ifd.value=[];
+            }
         },
         clearFile(state){
             state.fileUrlList.forEach(u=>{
@@ -169,6 +175,7 @@ export const store= new Vuex.Store({
             state.originDataType=[];
             state.base64ImgSrc=[];
             state.convImageSrc=[];
+            state.convImageUrl=[];
             state.isExecuted=false;
 
         },
@@ -183,28 +190,29 @@ export const store= new Vuex.Store({
                 img:state.base64ImgSrc,
                 type:state.originDataType
             }
-            state.request=request;
+            state.UploadRequest=request;
         },
         makeConvertRequest(state,payload){
             state.batchid=payload;
             var request={
-                color: state.currentColorHexCode,
+                shadow: state.currentColorHexCode,
                 sizeoption: state.select_sizeopt,
+                ext:state. select_format
             }
             if (state.select_sizeopt){
                 request.req_height=state.size.custom_height;
                 request.req_width=state.size.custom_width;
             }
             
-            console.log(request);
-            state.request=request;
-        },
-        afterRecieve(state){
-            state.isExecuted=true;
+            state.ConvertRequest=request;
         },
         updateConvertedFile(state,payload){
-            state.isExcuted=true;
+            state.isExecuted=true;
             state.convImageSrc=payload;
+            let header="data:image/"+state.select_format.substr(1,3)+";base64,"
+            state.convImageUrl=state.convImageSrc.map(src=>{
+                return header+src;
+            });
         }
 
     },
@@ -224,26 +232,34 @@ export const store= new Vuex.Store({
             }))
             .then(images=>{
                 context.commit('beforeUpload',images);
-                context.commit('afterRecieve');
             }, error=>{
                 console.error(error);
             });
 
-            await axios.post('http://localhost:8080/api/images',context.state.request)
+            const request=await axios.post('http://localhost:8080/api/images',context.state.UploadRequest)
             .then(response=>{
-                if (response.status===201) {
-                    console.log(response.data.id);
-                    context.commit('makeConvertRequest',response.data.id);
-                    
-                    axios.get('http://localhost:8080/api/orders/'+context.state.batchid+'/conv',context.state.request)
-                    .then(response=>{
-                        if (response.status===200){
-                            context.commit('updateConvertedFile',response.data.img);
-
-                        }
-                    })
-                }  
+                if (response.status===201){
+                    context.state.batchid=response.data.id;
+                    let request={
+                        shadow: context.state.currentColorHexCode,
+                        sizeoption: context.state.select_sizeopt,
+                        ext:context.state.select_format
+                    }
+                    if (context.state.select_sizeopt){
+                        request.req_height=context.state.size.custom_height;
+                        request.req_width=context.state.size.custom_width;
+                    }
+                    console.log(request);
+                    return request;
+                }
             })
-        }
+              
+            await axios.post('http://localhost:8080/api/orders/'+context.state.batchid+'/conv', request)
+            .then(response=>{
+                if (response.status===200){
+                    context.commit('updateConvertedFile',response.data.result);
+                }
+            });
+        },
     }
 })
